@@ -26,7 +26,7 @@
         <!--질문 수정-->
         <a class="modify"  th:href="@{|/question/modify/${question.id}|}" sec:authorize="isAuthenticated()"
         th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
-        th:text="[수정] ">
+        th:text="수정|">
         </a>
 
         <!--질문 삭제-->
@@ -34,7 +34,7 @@
            th:data-uri="@{|/question/delete/${question.id}|}"
            sec:authorize="isAuthenticated()"
            th:if="${question.author != null and #authentication.getPrincipal().getUsername()==question.author.username}"
-           th:text="[삭제]">
+           th:text="삭제">
         </a>
 
         <h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
@@ -58,12 +58,13 @@
 
                     <!--답변수정-->
                     <a class="modify" th:href="@{|/answer/modify/${answer.id}|}" sec:authorize="isAuthenticated()"
-                    th:text="[수정]"
-                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"></a>
+                    th:text="수정"
+                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}">
+                    </a>
                     <!--답변삭제-->
                     <a class="delete" href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
                     th:if="${answer.author !=null and #authentication.getPrincipal().getUsername() == answer.author.username}"
-                    th:text="[삭제]"
+                    th:text="삭제"
                     sec:authorize="isAuthenticated()"></a>
                     <!--댓글-->
                     <div th:each="comment : ${answer.comments}">
