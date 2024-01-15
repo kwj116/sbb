@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/question_detail.css}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="container">
+        <div th:replace="~{header/header :: headerFragment}"></div>
+        <h2 th:text="${question.subject}"></h2>
+        <hr>
+        <span th:if="${question.author != null}" th:text="|글쓴이:${question.author.username}|"></span>&ensp;|
+        <span th:text="${#temporals.format(question.createDate, 'yyyy.MM.dd HH:mm')}"></span>&ensp;|
+        <span th:text="|조회수 ${question.view}|"></span><!--새로 고침을 해도 조회수가 올라간다. (고민 후 추후 수정)-->
+        <br><br>
+        <div th:utext="${@commonUtil.markdown(question.content)}"></div>
+
+        <!--추천 버튼-->
+        <a class="recommend" href="javascript:void(0);" th:data-uri="@{|/question/vote/${question.id}|}">
+            추천
+            <span th:text="${#lists.size(question.voter)}"></span>
+        </a>
+        <!--질문 수정-->
+        <a th:href="@{|/question/modify/${question.id}|}" sec:authorize="isAuthenticated()"
+        th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
+        th:text="수정 ">
+        </a>
+
+        <!--질문 삭제-->
+        <a class="delete" href="javascript:void(0)"
+           th:data-uri="@{|/question/delete/${question.id}|}"
+           sec:authorize="isAuthenticated()"
+           th:if="${question.author != null and #authentication.getPrincipal().getUsername()==question.author.username}"
+           th:text="삭제">
+        </a>
+
+        <h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+        <hr>
+        <div th:each="answer : ${question.answerList}">
+            <!--밑의 a태그는 답변 등록,수정,추천등을 하면 작업한 답변부분으로 가도록 하기 위해 작성된 코드  -->
+            <a th:id="|answer_${answer.id}|"></a>
+            <div>
+                <p th:if="${answer.author != null}" th:text="|${answer.author.username}님의 답글(${#temporals.format(answer.createDate, 'yyyy.MM.dd.HH:mm')})|">
+                </p>
+                <p th:utext="${@commonUtil.markdown(answer.content)}">
+                </p>
+
+                <div th:if="${answer.modifyDate !=null}" >
+                    <div>modified at :
+                        <span th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd-HH:mm')}"></span>
+                    </div>
+                </div>
+                <p class="recommend_box">
+                    <a class="recommend" href="javascript:void(0);" th:data-uri="@{|/answer/vote/${answer.id}|}">
+                        추천
+                    </a>
+                    <span th:text="${#lists.size(answer.voter)}"></span>
+                    <!--답변수정-->
+                    <a th:href="@{|/answer/modify/${answer.id}|}" sec:authorize="isAuthenticated()" th:text="수정"
+                    th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"></a>
+                    <!--답변삭제-->
+                    <a href="javascript:void(0);" class="delete" th:data-uri="@{|/answer/delete/${answer.id}|}"
+                    th:if="${answer.author !=null and #authentication.getPrincipal().getUsername() == answer.author.username}"
+                    th:text="삭제"
+                    sec:authorize="isAuthenticated()"></a>
+                    <span class="appear_btn" >답글 달기</span>
+                    <!--댓글-->
+                    <div th:each="comment : ${answer.comments}">
+                            &ensp;ㄴ<span th:text="${comment.content}"></span>
+                            <span th:if="${comment.modifyDate != null}"
+                                  th:text="| - ${comment.author.username}, ${#temporals.format(comment.createDate, 'yyyy.MM.dd HH:mm')}
+                            (수정 : ${#temporals.format(comment.modifyDate, 'yyyy.MM.dd HH:mm')}">
+                            </span>
+                            <span th:if="${comment.modifyDate == null}"
+                                  th:text="| - ${comment.author.username}, ${#temporals.format(comment.createDate, 'yyyy.MM.dd HH:mm')}|">
+                            </span>
+                    </div>
+                    <div class="comment_btn" th:id="${answer.id}" >
+                        <form th:action="@{|/comment/create/${answer.id}|}" th:object="${commentForm}" method="post">
+                            <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                            <textarea class="comment_area" sec:authorize="isAnonymous()" disabled placeholder="로그인시 댓글작성 가능 합니다." th:field="*{content}"></textarea>
+                            <textarea class="comment_area" sec:authorize="isAuthenticated()" placeholder="댓글을 입력해주세요." th:field="*{content}"></textarea>
+                            <input type="hidden" name="questionId" th:value="${question.id}">
+                            <input type="submit" value="댓글 등록">
+                        </form>
+                    </div>
+                </p>
+            </div>
+            <hr>
+        </div>
+        
+
+        <form th:action="@{|/answer/create/${question.id}|}" th:object="${answerForm}" method="post">
+            <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+            <!--isAnonymous() : 로그아웃 상태일 경우-->
+            <!--isAuthenticated() : 로그인 상태일 경우-->
+            <textarea placeholder="로그인시 답글작성 가능 합니다."sec:authorize="isAnonymous()" disabled th:field="*{content}"></textarea>
+            <textarea placeholder="댓글을 입력해주세요." sec:authorize="isAuthenticated()" th:field="*{content}"></textarea>
+            <input type="submit" value="답변 등록">
+        </form>
+    </div>
+<th:block layout:fragment="script"></th:block>
+</body>
+<script layout:fragment="script" th:src="@{/js/deleteConfirm.js}" type="text/javascript"></script>
+<script layout:fragment="script" th:src="@{/js/recommendConfirm.js}" type="text/javascript"></script>
+<script layout:fragment="script" th:src="@{/js/appearComment.js}" type="text/javascript"></script>
+</html>

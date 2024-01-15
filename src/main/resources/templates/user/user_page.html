@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>사용자</th>
+            <td th:text="${username}"></td>
+        </tr>
+        <tr>
+            <th>이메일</th>
+            <td th:text="${email}"></td>
+        </tr>
+        <tr>
+            <td>비밀변호 변경</td>
+        </tr>
+
+    </table>
+    <h3>내가 작성한 글</h3>
+    <hr>
+    <div th:each="q : ${question}">
+        <a th:href="@{|/question/detail/${q.id}|}" sec:authorize="isAuthenticated()"
+           th:text="${q.subject}"></a>
+        <span th:if="${#lists.size(q.answerList)>0}" th:text="|[${#lists.size(q.answerList)}]|"></span>
+        <hr>
+    </div>
+</body>
+</html>

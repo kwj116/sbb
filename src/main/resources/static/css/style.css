@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Gothic+A1:wght@200;400&family=Noto+Sans+KR:wght@400;900&family=Orbit&display=swap');
+
+body{
+    background-color:whitesmoke;
+    font-size:14px;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+a{
+    text-decoration:none;
+    color:black;
+}
+
+
+textarea{
+    height: 6.25em;
+    border:none;
+    resize:none;
+    padding:10px;
+}
+
+.menu{
+    font-size:12px;
+}
+
+textarea{
+    width:100%;
+}
+
+input[type=submit]{
+    margin-top:10px;
+}

@@ -1,0 +1,10 @@
+textarea{
+    font-size:20px;
+    width:50%;
+}
+
+input[type="text"]{
+    width:50%;
+    height:40px;
+    font-size:17px;
+}

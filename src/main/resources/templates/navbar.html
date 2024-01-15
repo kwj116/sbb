@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="navbarFragment">
+    <span th:if="${username != null}">
+        <a class="user" th:href="@{|/user/userpage/${currentUserId}|}" th:text="|${username}님|"></a>&ensp;&ensp;
+    </span>
+    <a sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
+    <a sec:authorize="isAuthenticated" th:href="@{/user/logout}">로그아웃</a>&ensp;&ensp;
+    <a th:href="@{/user/signup}">회원가입</a>
+</nav>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h5>답변 수정</h5>
+    <form th:object="${answerForm}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+        <div>
+            <label>
+                <textarea th:field="*{content}" rows="10"></textarea>
+            </label>
+        </div>
+        <input type="submit" value="저장하기">
+    </form>
+</body>
+</html>
