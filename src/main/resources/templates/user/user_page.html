@@ -2,11 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/user_page.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/center_layout.css}">
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-    <table>
+    <table border="1">
         <tr>
             <th>사용자</th>
             <td th:text="${username}"></td>
@@ -16,17 +18,18 @@
             <td th:text="${email}"></td>
         </tr>
         <tr>
-            <td>비밀변호 변경</td>
         </tr>
 
     </table>
-    <h3>내가 작성한 글</h3>
-    <hr>
+    <h3>작성한 질문</h3>
     <div th:each="q : ${question}">
         <a th:href="@{|/question/detail/${q.id}|}" sec:authorize="isAuthenticated()"
            th:text="${q.subject}"></a>
         <span th:if="${#lists.size(q.answerList)>0}" th:text="|[${#lists.size(q.answerList)}]|"></span>
-        <hr>
+    </div>
+    <h3>작성한 답변</h3>
+    <div th:each="a : ${answerList}">
+        <div th:text="${a.content}"></div>
     </div>
 </body>
 </html>

@@ -6,7 +6,5 @@ Array.from(appear_btns).forEach(function(element){
             console.log(this.id);
         })
     })
-
-
 })
 

@@ -3,29 +3,30 @@
 <head>
     <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/question_detail.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/center_layout.css}">
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
     <div class="container">
         <div th:replace="~{header/header :: headerFragment}"></div>
-        <h2 th:text="${question.subject}"></h2>
-        <hr>
-        <span th:if="${question.author != null}" th:text="|글쓴이:${question.author.username}|"></span>&ensp;|
-        <span th:text="${#temporals.format(question.createDate, 'yyyy.MM.dd HH:mm')}"></span>&ensp;|
-        <span th:text="|조회수 ${question.view}|"></span><!--새로 고침을 해도 조회수가 올라간다. (고민 후 추후 수정)-->
-        <br><br>
-        <div th:utext="${@commonUtil.markdown(question.content)}"></div>
-
+        <div class="content_box">
+            <h1 th:text="${question.subject}"></h1>
+            <span th:if="${question.author != null}" th:text="|${question.author.username}|"></span>&ensp;|
+                <span th:text="${#temporals.format(question.createDate, 'yyyy.MM.dd HH:mm')}"></span>&ensp;|
+                <span th:text="|조회수 ${question.view}|"></span>
+            <br><br>
+            <div th:utext="${@commonUtil.markdown(question.content)}"></div>
+        </div>
         <!--추천 버튼-->
         <a class="recommend" href="javascript:void(0);" th:data-uri="@{|/question/vote/${question.id}|}">
-            추천
+            👍
             <span th:text="${#lists.size(question.voter)}"></span>
         </a>
         <!--질문 수정-->
-        <a th:href="@{|/question/modify/${question.id}|}" sec:authorize="isAuthenticated()"
+        <a class="modify"  th:href="@{|/question/modify/${question.id}|}" sec:authorize="isAuthenticated()"
         th:if="${question.author != null and #authentication.getPrincipal().getUsername() == question.author.username}"
-        th:text="수정 ">
+        th:text="[수정] ">
         </a>
 
         <!--질문 삭제-->
@@ -33,39 +34,37 @@
            th:data-uri="@{|/question/delete/${question.id}|}"
            sec:authorize="isAuthenticated()"
            th:if="${question.author != null and #authentication.getPrincipal().getUsername()==question.author.username}"
-           th:text="삭제">
+           th:text="[삭제]">
         </a>
 
         <h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
         <hr>
+        <br>
         <div th:each="answer : ${question.answerList}">
             <!--밑의 a태그는 답변 등록,수정,추천등을 하면 작업한 답변부분으로 가도록 하기 위해 작성된 코드  -->
             <a th:id="|answer_${answer.id}|"></a>
             <div>
-                <p th:if="${answer.author != null}" th:text="|${answer.author.username}님의 답글(${#temporals.format(answer.createDate, 'yyyy.MM.dd.HH:mm')})|">
-                </p>
-                <p th:utext="${@commonUtil.markdown(answer.content)}">
-                </p>
-
-                <div th:if="${answer.modifyDate !=null}" >
-                    <div>modified at :
-                        <span th:text="${#temporals.format(answer.modifyDate, 'yyyy-MM-dd-HH:mm')}"></span>
-                    </div>
-                </div>
+                <span th:if="${answer.author != null}" th:text="|${answer.author.username} (${#temporals.format(answer.createDate, 'yyyy.MM.dd.HH:mm')})|">
+                </span>
+                <span class="modified_text" th:if="${answer.modifyDate !=null}" >
+                    (수정됨)
+                </span>
+                <a class="recommend" href="javascript:void(0);" th:data-uri="@{|/answer/vote/${answer.id}|}">
+                    👍
+                </a>
+                <span th:text="${#lists.size(answer.voter)}"></span>
+                <p th:utext="${@commonUtil.markdown(answer.content)}"></p>
                 <p class="recommend_box">
-                    <a class="recommend" href="javascript:void(0);" th:data-uri="@{|/answer/vote/${answer.id}|}">
-                        추천
-                    </a>
-                    <span th:text="${#lists.size(answer.voter)}"></span>
+
                     <!--답변수정-->
-                    <a th:href="@{|/answer/modify/${answer.id}|}" sec:authorize="isAuthenticated()" th:text="수정"
+                    <a class="modify" th:href="@{|/answer/modify/${answer.id}|}" sec:authorize="isAuthenticated()"
+                    th:text="[수정]"
                     th:if="${answer.author != null and #authentication.getPrincipal().getUsername() == answer.author.username}"></a>
                     <!--답변삭제-->
-                    <a href="javascript:void(0);" class="delete" th:data-uri="@{|/answer/delete/${answer.id}|}"
+                    <a class="delete" href="javascript:void(0);" th:data-uri="@{|/answer/delete/${answer.id}|}"
                     th:if="${answer.author !=null and #authentication.getPrincipal().getUsername() == answer.author.username}"
-                    th:text="삭제"
+                    th:text="[삭제]"
                     sec:authorize="isAuthenticated()"></a>
-                    <span class="appear_btn" >답글 달기</span>
                     <!--댓글-->
                     <div th:each="comment : ${answer.comments}">
                             &ensp;ㄴ<span th:text="${comment.content}"></span>
@@ -79,15 +78,17 @@
                     </div>
                     <div class="comment_btn" th:id="${answer.id}" >
                         <form th:action="@{|/comment/create/${answer.id}|}" th:object="${commentForm}" method="post">
-                            <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+
                             <textarea class="comment_area" sec:authorize="isAnonymous()" disabled placeholder="로그인시 댓글작성 가능 합니다." th:field="*{content}"></textarea>
                             <textarea class="comment_area" sec:authorize="isAuthenticated()" placeholder="댓글을 입력해주세요." th:field="*{content}"></textarea>
-                            <input type="hidden" name="questionId" th:value="${question.id}">
-                            <input type="submit" value="댓글 등록">
+                            <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+                            <input type="hidden" name="questionId" th:value="${question.id}"><br>
+                            <input class="comment" type="submit" value="댓글 등록">
                         </form>
                     </div>
                 </p>
             </div>
+            <br>
             <hr>
         </div>
         

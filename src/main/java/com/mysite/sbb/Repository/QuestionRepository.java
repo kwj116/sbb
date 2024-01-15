@@ -18,7 +18,7 @@ public interface QuestionRepository extends JpaRepository<Question,Integer> {
     List<Question> findBySubjectLike(String subject);
     Page<Question> findAll(Pageable pageable);
 
-    @Query("SELECT q FROM Question q WHERE q.author.id = :authorId")
+    @Query("select q from Question q where q.author.id = :authorId")
     List<Question> findByAuthorId(@Param("authorId") int id);
     Page<Question> findAll(Specification<Question> spec, Pageable pageable);
 

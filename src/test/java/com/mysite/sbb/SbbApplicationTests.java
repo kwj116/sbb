@@ -134,4 +134,11 @@ class SbbApplicationTests {
 			questionService.create(subject,content,null);
 		}
 	}
+
+
+	@Test
+	void findAnswerList(){
+		Optional<Answer> byId = answerRepository.findById(30);
+		System.out.println(byId.get().getContent());
+	}
 }

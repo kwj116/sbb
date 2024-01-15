@@ -1,6 +1,7 @@
 package com.mysite.sbb.controller;
 
 import com.mysite.sbb.SecurityConfig;
+import com.mysite.sbb.domain.Answer;
 import com.mysite.sbb.domain.Question;
 import com.mysite.sbb.domain.SiteUser;
 import com.mysite.sbb.service.QuestionService;
@@ -79,12 +80,16 @@ public class UserController {
                            ) {
         SiteUser user = userService.getUser(principal.getName());
         List<Question> question = userService.getMyList(id);
+        List<Answer> myAnswerList = userService.getMyAnswerList(id);
+        System.out.println("myAnswerList = " + myAnswerList);
         System.out.println("id = " + id);
         System.out.println("question = " + question);
 
         model.addAttribute("username", user.getUsername());
         model.addAttribute("email",user.getEmail());
         model.addAttribute("question", question);
+        model.addAttribute("answerList", myAnswerList);
+
 
         return "user/user_page";
     }

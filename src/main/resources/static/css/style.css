@@ -6,6 +6,10 @@ body{
     font-family: 'Noto Sans KR', sans-serif;
 }
 
+.error{
+    color:red;
+}
+
 a{
     text-decoration:none;
     color:black;
